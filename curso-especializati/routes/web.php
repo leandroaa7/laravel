@@ -219,5 +219,65 @@ Route::middleware(['auth'])->group(function () {
 
 /** php artisan route:list 
  * lista todos as rotas com detalhes
-*/
+ */
 
+/**AULA 16 - Introdução aos Controllers no Laravel 6.x */
+
+Route::get('/products', 'ProductController@index')
+    ->name('products.index');
+
+/** AULA 17 - Controllers com Parâmetros de Rotas no Laravel 6.x */
+Route::get('/products/{id}/', 'ProductController@show')
+    ->name('products.show');
+
+/** AULA 18 - Controllers de CRUD no Laravel 6.x */
+
+/**Rota para exibir formulário de cadastro de produto */
+Route::get('/products/create', 'ProductController@create')
+    ->name('products.create');
+/**Rota para exibir formulário de edição de produto */
+Route::get('/products/{id}/edit/', 'ProductController@edit')
+    ->name('products.edit');
+/**Rota para cadastrar um novo produto */
+Route::post('/products', 'ProductController@store')
+    ->name('products.store');
+/**Rota para editar produto */
+Route::put('/products/{id}/', 'ProductController@update')
+    ->name('products.update');
+
+/**Rota para editar produto */
+Route::delete('/products/{id}/', 'ProductController@destroy')
+    ->name('products.destroy');
+
+/** Refatorando Rotas dos produtos */
+Route::group([
+    'middleware' => [],
+    'prefix' => 'products2',
+    'as' => 'product.'
+], function () {
+    /**Defina primeiro as rotas "fixas", como por exemplo /create, antes de rotas que usam id
+     * pois elas podem sobrescrever
+     * tente inverter as rotas, a /create é acessada pelo /{id}
+     */
+    Route::get('/', 'ProductController@index')->name('index');
+    Route::get('/create', 'ProductController@create')->name('create');
+    Route::get('/{id}', 'ProductController@show')->name('show');
+    Route::get('/{id}/edit', 'ProductController@edit')->name('edit');
+    Route::post('/', 'ProductController@store')->name('store');
+    Route::put('/{id}/', 'ProductController@update')->name('update');
+    Route::delete('/{id}/', 'ProductController@destroy')->name('destroy');
+});
+
+
+/** AULA 19 - Controllers Resources no Laravel 6.x 
+ *Resources cria todas as rotas para o seu controler
+ * sejam elas index,create,show,edit,store,update e destroy
+ * para criar o controller com todos os métodos basta digitar o comando abaixo
+ * php artisan make:controller NomeController --resource
+ */
+Route::resource('products3', 'Product2Controller');
+
+/**exemplo de resources utilizando group com middleware de autenticação */
+Route::group(["middleware" => ["auth"]], function () {
+    Route::resource('products4', 'Product2Controller');
+});
