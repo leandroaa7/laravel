@@ -28,6 +28,11 @@ use Illuminate\Support\Facades\Route;
  * no curso https://www.youtube.com/playlist?list=PLVSNL1PHDWvQBtcH_4VR82Dg-aFiVOZBY)
  * e no link https://laravel.com/docs/master/routing */
 
+ /* Rota inicial que usa o metódo estático get da classe Route cujos atributos são 
+  * A string da rota e uma função de callback
+  * Neste caso a função de callback retorna a função view que é responsável por renderizar uma página
+  * As páginas ficam no diretório /resources/views/
+  */
 Route::get('/', function () {
     return view('welcome');
 });
@@ -281,3 +286,85 @@ Route::resource('products3', 'Product2Controller');
 Route::group(["middleware" => ["auth"]], function () {
     Route::resource('products4', 'Product2Controller');
 });
+
+/** Controllers **
+ * Responsáveis pelas lógicas aplicadas ao sistema
+ * Ficam em app/Http/Controllers
+ * Para criar um controller que possui apenas UMA AÇÃO digite o comando - php artisan make:controller NomeDoControllerDesejadoController --invokable -
+ * invokable define a função com nome __invoke que será "invocada" quando o controller for "chamado"
+ * 
+ * Para criar um controller com TODAS AS FUNÇÕES DE CRUD basta - php artisan make:controller NomeDoControllerDesejadoController --resource
+ * resource são utilizados em rotas, Route::resource, ele define todas as rotas para o seu CRUD
+ * 
+ * Controllers ANINHADOS(Nested)
+ * Imagine que você tem as rotas de cidades e de países e gostaría de visualizar 
+ * cidades por país /pais/cidades
+ * Essa mistura de rotas é UM NESTED
+ * A sintaxe para aninhar rotas é unir rotas com ponto
+ * exemplo da sintaxe /pais.cidade 
+ * exemplo do código Route::resource('paises.cidades', 'CidadesController'); 
+ * Os exemplos acima indicam que todas as URLs possuem o prefixo /paises/[pais_id]/ e o pais_id
+ * deve ser parámetros de todas as funções de CidadesControllers
+ * logo a função index, show deve ser index($pais_id), show($pais_id, City $cidade_id)
+ * você pode ver mais detalhes em https://laraveldaily.com/nested-resource-controllers-and-routes-laravel-crud-example/
+ * 
+ * Defina o nome dos controllers com primeira letra Maiúscula e com o nome, por convenção,  Controller após o nome desejado
+ * DOCUMENTAÇÃO https://laravel.com/docs/6.x/controllers
+ */
+
+ 
+ /**Exemplo de controller que possui apenas uma ação */
+ Route::get('/single','SingleActionController');
+
+ /**Exemplo de resource que utiliza apenas as rotas desejadas
+  * tente digitar /products5/show
+  */
+ Route::resource('products5', 'Product2Controller')->only([
+     'index'
+ ]);
+
+  /**Exemplo de resource que utiliza todas as rotas exceto index  */
+ Route::resource('products6', 'Product2Controller')->except([
+    'index'
+]);
+
+/**Exemplo de Nested Resource */
+Route::resource('countries.cities', 'CitiesController');
+
+/**AULA 20 e 21 estão no arquivo Product2Controller */
+
+/** Middlewares **
+ * Middlewares são filtros, ou funções intermediárias entre a requisição e a resposta do servidor
+ * Um exemplo é um middleware de autenticação, quando o usuário faz uma requisição de uma página, a requisição "passa" por vários middlewares
+ * Que vão passando por $next($request) no php
+ * Quando chegar no middleware de autenticação ele vai verificar se o usuário tem permissão de acessar a página, caso ele tenha o middleware vai retornar a página
+ * Caso contrário irá redirecionar para uma página específica
+ * 
+ * Os middlewares podem ser encontrados no diretório app/Http/Middleware
+ * para criar um middleware basta utilizar o comando - php artisan make:middleware NomeDoMiddleware -
+ * Para definir o seu middleware em TODAS as requisições basta adicionar o diretório do middleware em app/Http/Kernel.php no array $middleware 
+ * Para definir o seu middleware nas rotas desejadas basta adicionar o diretório do middleware em app/Http/Kernel.php no array routeMiddleware
+ * Existem outros tipos de middlewares basta verificar na documentação, link abaixo
+ * 
+ * Middlewares é um padrão, não confundir com o middleware https://pt.wikipedia.org/wiki/Middleware,
+ * procure por middleware pattern (existe em ruby, node, laravel etc)
+ * 
+ * DOCUMENTAÇÃO https://laravel.com/docs/6.x/middleware
+ */
+
+/**Exemplo de uso de middleware
+ * a rota /age/{age} utiliza o middleware, definido em routeMiddleware no diretório app/Http/Kernel.php, checkAge para 
+ * verificar se a idade é menor,
+ * igual ou maior que 18 e trata conforme cada valor  */
+
+Route::get('/age/maior', function () {
+    return "maior de 18";
+});
+Route::get('/age/menor', function () {
+    return "menor de 18";
+});
+Route::get('/age/igual', function () {
+    return "igual de 18";
+});
+
+Route::get('/age/{age}')->middleware('checkAge');

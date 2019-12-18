@@ -1,39 +1,15 @@
 <?php
 
-/**
- * AULA 19 - Controllers Resources no Laravel 6.x 
- * Criado com o comando 
- * php artisan make:controller NomeController --resource
- */
+/** Criado com o comando php artisan make:controller CountriesController --resource 
+ * https://laraveldaily.com/nested-resource-controllers-and-routes-laravel-crud-example/
+*/
 
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 
-class product2Controller extends Controller
+class CountriesController extends Controller
 {
-    protected $request;
-
-    /**AULA 20 - Injeção de Dependências no Laravel 6.x
-     * O atributo do construtor $request é UMA INJEÇÃO DE DEPENDÊNCIA
-     * ou seja, é o mesmo que fazer $request = new Request;
-     */
-    public function __construct(Request $request)
-    {
-        //Objeto do tipo Request que possui atributos da requisição
-        $this->request = $request;
-
-        /**AULA 21 - Middlewares em Controllers no Laravel 6.x */
-
-        /** aplicando middleware AUTH apenas nas funções definidas no array dentro de ONLY
-         * neste caso seriam as funções CREATE e SHOW*/
-        $this->middleware(['auth'])->only(['create', 'show', 'store']);
-
-        /* middleware de autenticação sendo aplicados em todas as funções deste controller, Product3Controller
-         * Exceto na função index */
-        $this->middleware(['auth'])->except(['index']);
-    }
-
     /**
      * Display a listing of the resource.
      *
@@ -41,7 +17,7 @@ class product2Controller extends Controller
      */
     public function index()
     {
-        return "listagem de produtos";
+        //
     }
 
     /**
@@ -51,7 +27,7 @@ class product2Controller extends Controller
      */
     public function create()
     {
-        return "retorna formulário para criar";
+        //
     }
 
     /**
